@@ -26,7 +26,6 @@ int main()
     t1.name = "Kushal Shrestha";
     t1.department = "CS";
     t1.subject = "Data Structures";
-    t1.salary = 175000;
 
     cout << t1.name << " has a salary of $" << t1.salary << endl;
 
