@@ -1,28 +1,43 @@
-#ifndef LLIST_H
-#define LLIST_H
+#include <iostream>
+
+using namespace std;
 
 class Node
 {
 public:
     int data;
     Node *next;
+    Node *prev;
 
     Node(int val)
     {
         this->data = val;
         this->next = nullptr;
+        this->prev = nullptr;
     }
 };
 
-class LList
+class DLList
 {
 public:
     Node *head;
     Node *tail;
 
-    LList()
+    DLList()
     {
         head = tail = nullptr;
+    }
+
+    // Destructor to prevent memory leaks when the list is destroyed
+    ~DLList()
+    {
+        Node *current = head;
+        while (current != nullptr)
+        {
+            Node *nextNode = current->next;
+            delete current;
+            current = nextNode;
+        }
     }
 
     void print()
@@ -35,7 +50,7 @@ public:
             tempPtr = tempPtr->next;
         }
 
-        cout << endl;
+        cout << "NULL" << endl; // Added NULL for visual clarity
     }
 
     void push_front(int val)
@@ -44,41 +59,37 @@ public:
 
         if (!head)
         {
-            head = newNode;
-            tail = newNode;
+            head = tail = newNode;
         }
-
         else
         {
             newNode->next = head;
+            head->prev = newNode;
             head = newNode;
         }
     }
 
     void pop_front()
     {
-        if (head)
-        {
-            Node *tempPtr = head;
-
-            if (head == tail)
-            {
-                tail = nullptr;
-            }
-
-            head = head->next;
-            tempPtr->next = nullptr;
-
-            delete tempPtr;
-        }
-
-        else
+        if (!head)
         {
             cout << "List is empty." << endl;
             return;
         }
 
-        return;
+        Node *tempPtr = head;
+        head = head->next; // Move head to the next node
+
+        if (head) // If the list is not empty after popping
+        {
+            head->prev = nullptr;
+        }
+        else // If the list is now empty
+        {
+            tail = nullptr;
+        }
+
+        delete tempPtr; // Safely delete the old head
     }
 
     void push_back(int val)
@@ -89,10 +100,10 @@ public:
         {
             head = tail = newNode;
         }
-
         else
         {
             tail->next = newNode;
+            newNode->prev = tail;
             tail = newNode;
         }
     }
@@ -105,28 +116,19 @@ public:
             return;
         }
 
-        else
+        Node *tempPtr = tail;
+        tail = tail->prev; // Move tail back by one using the prev pointer! (O(1) time)
+
+        if (tail) // If the list is not empty after popping
         {
-            Node *tempPtr = head;
-
-            if (head == tail)
-            {
-                head = nullptr;
-                tail = nullptr;
-            }
-
-            else
-            {
-                while (tempPtr->next != tail)
-                {
-                    tempPtr = tempPtr->next;
-                }
-
-                tempPtr->next = nullptr;
-                delete tail;
-                tail = tempPtr;
-            }
+            tail->next = nullptr;
         }
+        else // If the list is now empty
+        {
+            head = nullptr;
+        }
+
+        delete tempPtr; // Safely delete the old tail
     }
 
     void insertAtPos(int val, int pos)
@@ -166,9 +168,14 @@ public:
             return;
         }
 
+        // Fixed: Updating both next and prev pointers for a middle insertion
         Node *newNode = new Node(val);
+
         newNode->next = tempPtr->next;
-        tempPtr->next = newNode;
+        newNode->prev = tempPtr;
+
+        tempPtr->next->prev = newNode; // Point the node AFTER tempPtr back to newNode
+        tempPtr->next = newNode;       // Point tempPtr forward to newNode
     }
 
     int search(int val)
@@ -191,4 +198,19 @@ public:
     }
 };
 
-#endif
+int main()
+{
+    DLList list;
+
+    list.push_front(2);
+    list.push_front(1);
+    list.push_front(0);
+
+    list.push_back(3);
+    list.push_back(4);
+    list.push_back(5);
+
+    list.print();
+
+    return 0;
+}
