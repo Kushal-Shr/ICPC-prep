@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
-#include <ext/pb_ds/assoc_container/hpp>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
 
 using namespace __gnu_pbds;
 using namespace std;
@@ -22,7 +23,7 @@ void i_c_p_c()
     cout.tie(0);
 }
 
-int main()
+int32_t main()
 {
     i_c_p_c();
 
